@@ -70,32 +70,12 @@ module IdentityCache
     end
 
     def fetch(key, cache_fetcher_options = {})
-      memo_misses = 0
-      cache_misses = 0
-
-      value = ActiveSupport::Notifications.instrument("cache_fetch.identity_cache") do |payload|
-        payload[:resolve_miss_time] = 0.0
-
-        value = fetch_memoized(key) do
-          memo_misses = 1
-          @cache_fetcher.fetch(key, **cache_fetcher_options) do
-            cache_misses = 1
-            instrument_duration(payload, :resolve_miss_time) do
-              yield
-            end
-          end
-        end
-        set_instrumentation_payload(payload, num_keys: 1, memo_misses: memo_misses, cache_misses: cache_misses)
-        value
-      end
-
-      if cache_misses > 0
-        IdentityCache.logger.debug { "[IdentityCache] cache miss for #{key}" }
-      else
-        IdentityCache.logger.debug do
-          "[IdentityCache] #{memo_misses > 0 ? "(cache_backend)" : "(memoized)"} cache hit for #{key}"
+      value = fetch_memoized(key) do
+        @cache_fetcher.fetch(key, **cache_fetcher_options) do
+          yield
         end
       end
+      value
 
       value
     end
