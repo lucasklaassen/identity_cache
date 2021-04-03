@@ -57,16 +57,16 @@ module IdentityCache
     end
 
     def delete(key)
-      memoizing = memoizing?
-      ActiveSupport::Notifications.instrument("cache_delete.identity_cache", memoizing: memoizing) do
-        memoized_key_values.delete(key) if memoizing
-        if (result = @cache_fetcher.delete(key))
-          IdentityCache.logger.debug { "[IdentityCache] delete recorded for #{key}" }
-        else
-          IdentityCache.logger.error { "[IdentityCache] delete failed for #{key}" }
-        end
-        result
-      end
+      # memoizing = memoizing?
+      # ActiveSupport::Notifications.instrument("cache_delete.identity_cache", memoizing: memoizing) do
+      #   memoized_key_values.delete(key) if memoizing
+      #   if (result = @cache_fetcher.delete(key))
+      #     IdentityCache.logger.debug { "[IdentityCache] delete recorded for #{key}" }
+      #   else
+      #     IdentityCache.logger.error { "[IdentityCache] delete failed for #{key}" }
+      #   end
+      #   result
+      # end
     end
 
     def fetch(key, cache_fetcher_options = {})
